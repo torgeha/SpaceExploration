@@ -7,10 +7,10 @@ namespace Data
     {
 
         public int Proficiency { get; set; }
-        public int Productivity { get; set; }
+        public float Productivity { get; set; }
         public int Salary { get; set; }
 
-        public Staff(int proficiency, int productivity, int salary)
+        public Staff(int proficiency, float productivity, int salary)
         {
             Proficiency = proficiency;
             Productivity = productivity;
@@ -19,7 +19,7 @@ namespace Data
 
         public override string ToString()
         {
-            return "Prof: " + Proficiency + " Prod: " + Productivity + " Salary: " + Salary;
+            return " - Prof: " + Proficiency + " - Prod: " + Productivity.ToString("0.0") + " - Salary: " + Salary;
         }
 
     }

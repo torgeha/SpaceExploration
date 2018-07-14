@@ -34,8 +34,14 @@ public class TakeMissionContractButton : MonoBehaviour {
 
     public void UpdateButtonText()
     {
+        var manMonths = gameManager.GetEngineeringManMonthProgress();
+        var duration = Mathf.CeilToInt(missionContractTask.DurationInMonths / (manMonths > 0 ? manMonths : -1)); // Avoid dividing by 0
+
+        if (duration < 0)
+            duration = -1;
+
         MissionContractButtonText.text = 
-            "D: " + missionContractTask.DurationInMonths + 
+            "D: " +  duration + 
             "-S: " + (gameManager.GetMissionContractSuccessProbability(missionContractTask) * 100).ToString("0.0") + "%" +
             "-Com: " + missionContractTask.Complexity + 
             "-V: " + missionContractTask.Value;

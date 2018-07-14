@@ -6,7 +6,7 @@ namespace Data
     public abstract class Task
     {
         public int DurationInMonths { get; set; } // How long it will take to complete
-        public int ProgressInMonths { get; set; } // Progress, starts at 0
+        public float ProgressInMonths { get; set; } // Progress, starts at 0
         public int Complexity { get; set; } // How hard complex this task is to do
 
         protected Task(int durationInMonths, int complexity) 
@@ -18,13 +18,13 @@ namespace Data
 
         public bool IsComplete()
         {
-            return DurationInMonths - ProgressInMonths == 0;
+            return DurationInMonths - ProgressInMonths <= 0;
         }
 
-        public void ProgressOneMonth()
+        public void AddMonthsToProgress(float months)
         {
             if (ProgressInMonths < DurationInMonths)
-                ProgressInMonths++;
+                ProgressInMonths += months;
         }
 
         public float GetProgressPercentage()
