@@ -6,6 +6,7 @@ public class LaunchVisualizationManager : MonoBehaviour {
 
     public GameObject VisualizationParent;
     public GameObject RocketPrefab;
+    public GameObject LaunchTower;
 
     private GameManager gameManager;
 
@@ -15,9 +16,13 @@ public class LaunchVisualizationManager : MonoBehaviour {
     private GameObject rocketBottom;
 
     private RocketController rocketController;
+    private LaunchTowerController launchTowerController;
 
 	// Use this for initialization
 	void Start () {
+
+        launchTowerController = LaunchTower.GetComponent<LaunchTowerController>();
+
         VisualizeMissionStart();
         VisualizeMissionProgress(0.3f);
         VisualizeMissionProgress(0.6f);
@@ -71,6 +76,7 @@ public class LaunchVisualizationManager : MonoBehaviour {
         // Rocket flies up
 
         rocketController.StartSuccessLaunch();
+        launchTowerController.RetractArm();
 
         // TODO: call gamemanager to trigger launch report
     }

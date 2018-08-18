@@ -5,6 +5,7 @@ using UnityEngine;
 public class RocketController : MonoBehaviour {
 
     private ParticleSystem particleTrail;
+    private ParticleSystem particleFlame;
 
     public float MaxVerticalSpeed = 400f;
     public float MaxHorizontalSpeed = 600f;
@@ -22,10 +23,11 @@ public class RocketController : MonoBehaviour {
 
     private float logIntervalSeconds = 2;
 
-    private void Start()
+    private void Awake()
     {
-        particleTrail = GetComponentInChildren<ParticleSystem>();
-        StartCoroutine("logStuff");
+        particleTrail = transform.Find("ParticleTrail").GetComponentInChildren<ParticleSystem>();
+        particleFlame = transform.Find("ParticleFlame").GetComponentInChildren<ParticleSystem>();
+        //StartCoroutine("logStuff");
         
     }
 
@@ -101,12 +103,20 @@ public class RocketController : MonoBehaviour {
 
     public void StartSuccessLaunch()
     {
-        shouldLaunchSuccess = true;
         particleTrail.Play();
+        particleFlame.Play();
+        IEnumerator coroutine = startLaunchDelayed(3.0f);
+        StartCoroutine(coroutine);
     }
 
     public void StartFailureLaunch()
     {
         shouldLaunchFailure = true;
+    }
+
+    private IEnumerator startLaunchDelayed(float delayInSeconds)
+    {
+        yield return new WaitForSeconds(delayInSeconds);
+        shouldLaunchSuccess = true;
     }
 }
