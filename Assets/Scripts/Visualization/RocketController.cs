@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RocketController : MonoBehaviour {
 
+    private ParticleSystem particleTrail;
+
     public float MaxVerticalSpeed = 400f;
     public float MaxHorizontalSpeed = 600f;
     public float AccelerationVertical = 50f;
@@ -12,7 +14,6 @@ public class RocketController : MonoBehaviour {
 
     private float verticalSpeed = 0f;
     private float horizontalSpeed = 0f;
-    private Vector3 direction = new Vector3(0, 1, 0); // Start straight up
 
     private bool shouldLaunchSuccess = false;
     private bool shouldLaunchFailure = false;
@@ -23,7 +24,9 @@ public class RocketController : MonoBehaviour {
 
     private void Start()
     {
+        particleTrail = GetComponentInChildren<ParticleSystem>();
         StartCoroutine("logStuff");
+        
     }
 
     // Update is called once per frame
@@ -85,16 +88,21 @@ public class RocketController : MonoBehaviour {
             transform.position.y + (verticalSpeed * deltatime), 
             transform.position.z);
 
-        var newRotation = Quaternion.FromToRotation(Vector3.up, new Vector3(newPos.x, newPos.y, 0));
 
         transform.position = newPos;
-        transform.rotation = newRotation;
 
+        // only apply rotation when having horizontal speed
+        if (horizontalSpeed > 0)
+        {
+            var newRotation = Quaternion.FromToRotation(Vector3.up, new Vector3(horizontalSpeed, verticalSpeed, 0));
+            transform.rotation = newRotation;
+        }
     }
 
     public void StartSuccessLaunch()
     {
         shouldLaunchSuccess = true;
+        particleTrail.Play();
     }
 
     public void StartFailureLaunch()
