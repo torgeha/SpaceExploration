@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour {
     public Text FundsText;
     public Text ExpencesText;
     
-
     public Text OverviewText;
     public Text HiresText;
 
@@ -28,6 +27,8 @@ public class GameManager : MonoBehaviour {
     public GameObject AvailableMissionRowPanel;
     //public GameObject HireEngineerButtonPrefab;
     public GameObject HireEngineerRowPanel;
+
+    private LaunchVisualizationManager launchVisualizationManager;
 
     private long funds;
     private int month;
@@ -61,6 +62,9 @@ public class GameManager : MonoBehaviour {
 
         resetAvailableMissionContracts();
         resetAvailableEngineersForHire();
+
+        launchVisualizationManager = GetComponentInChildren<LaunchVisualizationManager>();
+        launchVisualizationManager.Setup(this);
     }
 	
     public void OnProcessNextRound()
@@ -280,8 +284,6 @@ public class GameManager : MonoBehaviour {
             row.GetComponentInChildren<TakeMissionContractButton>().UpdateButtonText();
         }
     }
-
-
 
     private void handleMissionContractSuccess()
     {

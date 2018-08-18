@@ -34,8 +34,6 @@ public class HireEngineerButton : MonoBehaviour {
 
     public void UpdateButtonText()
     {
-
-        Debug.Log("Setting text on eng button");
         HireEngineerButtonText.text =
             "Prof: " + engineerStaff.Proficiency +
             " - Prod: " + engineerStaff.Productivity.ToString("0.00") +
