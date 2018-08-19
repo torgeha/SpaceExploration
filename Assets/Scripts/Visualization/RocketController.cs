@@ -6,6 +6,7 @@ public class RocketController : MonoBehaviour {
 
     private ParticleSystem particleTrail;
     private ParticleSystem particleFlame;
+    private ParticleSystem particleExplosion;
 
     public float MaxVerticalSpeed = 400f;
     public float MaxHorizontalSpeed = 600f;
@@ -16,8 +17,9 @@ public class RocketController : MonoBehaviour {
     private float verticalSpeed = 0f;
     private float horizontalSpeed = 0f;
 
-    private bool shouldLaunchSuccess = false;
-    private bool shouldLaunchFailure = false;
+    public bool shouldLaunchSuccess = false;
+    public bool shouldLaunchFailure = false;
+    public bool shouldResetCameraRotation = false;
 
     private float heightOfHorizontalAccelerationStart = 2000;
 
@@ -27,6 +29,7 @@ public class RocketController : MonoBehaviour {
     {
         particleTrail = transform.Find("ParticleTrail").GetComponentInChildren<ParticleSystem>();
         particleFlame = transform.Find("ParticleFlame").GetComponentInChildren<ParticleSystem>();
+        particleExplosion = transform.Find("ParticleExplosion").GetComponentInChildren<ParticleSystem>();
         //StartCoroutine("logStuff");
         
     }
@@ -37,16 +40,36 @@ public class RocketController : MonoBehaviour {
 		if (shouldLaunchSuccess)
         {
             progressSuccessFlight(Time.deltaTime);
+            //updateCameraRotation(Time.deltaTime);
+            checkIfDone();
         }
 
         else if (shouldLaunchFailure)
         {
 
         }
-
-
-        // TODO: stop moving and destroy rocket when it is too high
 	}
+
+    private void checkIfDone()
+    {
+        if (transform.position.x > 13000)
+        {
+            shouldLaunchSuccess = false;
+            shouldResetCameraRotation = true;
+            StartCoroutine("deleteSelfAfterDelay");
+        }
+
+        // TODO: check if failure is done, reset camera position.
+    } 
+
+    private IEnumerator deleteSelfAfterDelay()
+    {
+        yield return new WaitForSeconds(5.0f);
+
+        //make sure camera is reset before deleting self
+        Camera.main.transform.rotation = Quaternion.identity;
+        Destroy(gameObject);
+    }
 
     private IEnumerator logStuff()
     {
@@ -105,18 +128,33 @@ public class RocketController : MonoBehaviour {
     {
         particleTrail.Play();
         particleFlame.Play();
-        IEnumerator coroutine = startLaunchDelayed(3.0f);
+        IEnumerator coroutine = startLaunchDelayed(3.0f, true);
         StartCoroutine(coroutine);
     }
 
     public void StartFailureLaunch()
     {
-        shouldLaunchFailure = true;
+        particleTrail.Play();
+        particleFlame.Play();
+        IEnumerator coroutine = startLaunchDelayed(3.0f, false);
+        StartCoroutine(coroutine);
     }
 
-    private IEnumerator startLaunchDelayed(float delayInSeconds)
+    private IEnumerator startLaunchDelayed(float delayInSeconds, bool success)
     {
         yield return new WaitForSeconds(delayInSeconds);
-        shouldLaunchSuccess = true;
+
+        if (success == true)
+        {
+            shouldLaunchSuccess = true;
+        }
+        else
+        {
+            particleFlame.Stop();
+            particleTrail.Stop();
+            particleExplosion.Play();
+
+            Destroy(gameObject, particleExplosion.main.duration + 0.5f);
+        }
     }
 }

@@ -143,6 +143,8 @@ public class GameManager : MonoBehaviour {
 
         // Remove available contracts
         deleteAvailableMissionContracts();
+
+        launchVisualizationManager.VisualizeMissionStart();
     }
 
     public void OnLaunchMission()
@@ -168,10 +170,12 @@ public class GameManager : MonoBehaviour {
         if (random <= successProbability)
         {
             handleMissionContractSuccess();
+            launchVisualizationManager.VisualizeSuccess();
             return;
         }
 
         handleMissionContractFailure();
+        launchVisualizationManager.VisualizeFailure();
     }
 
     public float GetMissionContractSuccessProbability(MissionContractTask mc)
@@ -380,6 +384,8 @@ public class GameManager : MonoBehaviour {
             currentMissionContract.AddMonthsToProgress(manMonthsProgressed);
             CurrentMissionSummaryText.text = getCurrentMissionSummaryString();
             CurrentMissionFullText.text = getCurrentMissionFullString();
+
+            launchVisualizationManager.VisualizeMissionProgress(currentMissionContract.GetProgressPercentage());
         }
     }
 

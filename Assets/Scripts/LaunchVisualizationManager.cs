@@ -23,16 +23,29 @@ public class LaunchVisualizationManager : MonoBehaviour {
 
         launchTowerController = LaunchTower.GetComponent<LaunchTowerController>();
 
-        VisualizeMissionStart();
-        VisualizeMissionProgress(0.3f);
-        VisualizeMissionProgress(0.6f);
-        VisualizeMissionProgress(0.91f);
+        //VisualizeMissionStart();
+        //VisualizeMissionProgress(0.3f);
+        //VisualizeMissionProgress(0.6f);
+        //VisualizeMissionProgress(0.91f);
 
-        VisualizeSuccess();
-	}
+        //VisualizeFailure();
+
+        //VisualizeSuccess();
+    }
 	
 	// Update is called once per frame
 	void Update () {
+
+        // Handle camera rotation
+        if (rocketController != null && rocketController.shouldLaunchSuccess)
+        {
+            updateCameraRotation(Time.deltaTime);
+        }
+        else if (rocketController != null && rocketController.shouldResetCameraRotation)
+        {
+            resetCameraRotation(Time.deltaTime);
+            launchTowerController.ResetArm();
+        }
 		
 	}
 
@@ -57,15 +70,15 @@ public class LaunchVisualizationManager : MonoBehaviour {
     {
         // add more parts to rocket based on progress
 
-        if (progress > 0.29 && !rocketBottom.activeSelf)
+        if (progress > 29 && !rocketBottom.activeSelf)
         {
             rocketBottom.SetActive(true);
         }
-        if (progress > 0.59 && !rocketMid.activeSelf)
+        if (progress > 59 && !rocketMid.activeSelf)
         {
             rocketMid.SetActive(true);
         }
-        if (progress > 0.9 && !rocketTop.activeSelf)
+        if (progress > 90 && !rocketTop.activeSelf)
         {
             rocketTop.SetActive(true);
         }
@@ -87,5 +100,25 @@ public class LaunchVisualizationManager : MonoBehaviour {
         rocketController.StartFailureLaunch();
 
         // TODO: call gamemanager to trigger launch report
+    }
+
+    private void updateCameraRotation(float deltatime)
+    {
+        var camera = Camera.main;
+
+        var targetPosition = new Vector3(
+            0,
+            rocketParent.transform.position.y,
+            rocketParent.transform.position.z);
+
+        var targetRotation = Quaternion.LookRotation(targetPosition - camera.transform.position);
+
+        camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, targetRotation, deltatime);
+    }
+
+    private void resetCameraRotation(float deltatime)
+    {
+        var camera = Camera.main;
+        camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, Quaternion.identity, deltatime);
     }
 }

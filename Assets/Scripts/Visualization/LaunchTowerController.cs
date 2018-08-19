@@ -12,9 +12,14 @@ public class LaunchTowerController : MonoBehaviour {
 
     private GameObject towerArm;
     private bool shouldRetractArm = false;
+    private bool shouldResetArm = false;
 
     private float cumRetracted = 0;
     private float cumRotatedDegrees = 0;
+
+    private Vector3 initialTowerArmPosition = new Vector3(30, 30, 0);
+    private Quaternion initialTowerArmRotation = Quaternion.identity;
+    private float cumRetractionTime = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -53,6 +58,19 @@ public class LaunchTowerController : MonoBehaviour {
                 shouldRetractArm = false;
             }
         }
+        //else if (shouldResetArm)
+        //{
+        //    cumRetractionTime += Time.deltaTime;
+        //    towerArm.transform.localPosition = Vector3.Lerp(towerArm.transform.position, initialTowerArmPosition, cumRetractionTime);
+        //    towerArm.transform.rotation = Quaternion.Lerp(towerArm.transform.rotation, initialTowerArmRotation, cumRetractionTime);
+
+        //    if (cumRetractionTime >= 1.0f)
+        //    {
+        //        shouldResetArm = false;
+        //        Debug.Log("done resetting");
+        //    }
+            
+        //}
 
 	}
 
@@ -60,6 +78,15 @@ public class LaunchTowerController : MonoBehaviour {
     {
         IEnumerator coroutine = delayRetractArm(3.0f);
         StartCoroutine(coroutine);
+    }
+
+    public void ResetArm()
+    {
+        if (towerArm.transform.localPosition != initialTowerArmPosition)
+        {
+            towerArm.transform.localPosition = initialTowerArmPosition;
+            towerArm.transform.rotation = initialTowerArmRotation;
+        }
     }
 
     private IEnumerator delayRetractArm(float delayInSeconds)
