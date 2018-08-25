@@ -14,8 +14,9 @@ public class GameManager : MonoBehaviour {
     public Text TurnText;
     public Text FundsText;
     public Text ExpencesText;
-    
-    public Text OverviewText;
+
+    public Text ErrorText;
+    public Text OverviewText; // Deprecated, will be replaced by errortext, launch report and monthly report.
     public Text HiresText;
 
     public GameObject MissionsAvailablePanel;
@@ -35,6 +36,7 @@ public class GameManager : MonoBehaviour {
 
     private const int totalAvailableMissionContracts = 5;
     private const int totalAvailableEngineersForHire = 5;
+    private const float errorTextDisplayTime = 3.0f;
 
     private List<GameObject> missionContractRows = new List<GameObject>();
     private List<GameObject> hireEngineerRows = new List<GameObject>();
@@ -127,13 +129,15 @@ public class GameManager : MonoBehaviour {
     {
         if (currentMissionContract != null)
         {
-            OverviewText.text = "Mission contract already in progress, only one allowed at a time.";
+            //OverviewText.text = "Mission contract already in progress, only one allowed at a time.";
+            showErrorMessage("Mission contract already in progress, only one allowed at a time.");
             return;
         }
 
         if (hiredEngineers.Count == 0)
         {
-            OverviewText.text = "Cannot start mission contract without engineers.";
+            //OverviewText.text = "Cannot start mission contract without engineers.";
+            showErrorMessage("Cannot start mission contract without engineers.");
             return;
         }
 
@@ -152,7 +156,8 @@ public class GameManager : MonoBehaviour {
         // Can only launch mission if a mission is complete
         if (currentMissionContract == null || !currentMissionContract.IsComplete())
         {
-            OverviewText.text = "Cannot launch mission without a completed Mission Contract";
+            //OverviewText.text = "Cannot launch mission without a completed Mission Contract";
+            showErrorMessage("Cannot launch mission without a completed Mission Contract");
             return;
         }
 
@@ -440,5 +445,20 @@ public class GameManager : MonoBehaviour {
     private void updateFundsText()
     {
         FundsText.text = "Funds: " + funds;
+    }
+
+    private void showErrorMessage(string message)
+    {
+        IEnumerator coroutine = displayErrorMessage(message);
+        StartCoroutine(coroutine);
+    }
+
+    private IEnumerator displayErrorMessage(string message)
+    {
+        ErrorText.text = message;
+        ErrorText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(errorTextDisplayTime);
+        ErrorText.text = "";
+        ErrorText.gameObject.SetActive(false);
     }
 } 
