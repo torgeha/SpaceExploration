@@ -18,6 +18,9 @@ public class LaunchVisualizationManager : MonoBehaviour {
     private RocketController rocketController;
     private LaunchTowerController launchTowerController;
 
+    private const float successReportDelay = 25;
+    private const float failureReportDelay = 6;
+
 	// Use this for initialization
 	void Start () {
 
@@ -91,7 +94,8 @@ public class LaunchVisualizationManager : MonoBehaviour {
         rocketController.StartSuccessLaunch();
         launchTowerController.RetractArm();
 
-        // TODO: call gamemanager to trigger launch report
+        IEnumerator coroutine = showLaunchReportDelayed(successReportDelay, true);
+        StartCoroutine(coroutine);
     }
 
     public void VisualizeFailure()
@@ -99,7 +103,8 @@ public class LaunchVisualizationManager : MonoBehaviour {
         // rocket crashes
         rocketController.StartFailureLaunch();
 
-        // TODO: call gamemanager to trigger launch report
+        IEnumerator coroutine = showLaunchReportDelayed(failureReportDelay, false);
+        StartCoroutine(coroutine);
     }
 
     private void updateCameraRotation(float deltatime)
@@ -120,5 +125,18 @@ public class LaunchVisualizationManager : MonoBehaviour {
     {
         var camera = Camera.main;
         camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, Quaternion.identity, deltatime);
+    }
+
+    private IEnumerator showLaunchReportDelayed(float delayInSeconds, bool success)
+    {
+        yield return new WaitForSeconds(delayInSeconds);
+        if (success)
+        {
+            gameManager.HandleMissionContractSuccess();
+        }
+        else
+        {
+            gameManager.HandleMissionContractFailure();
+        }
     }
 }

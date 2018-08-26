@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour {
     public GameObject HiresCanvas;
     public GameObject MissionsCanvas;
     public GameObject LaunchSummaryCanvas;
+    public GameObject MonthlyReportCanvas;
+    public GameObject LaunchReportCanvas;
 
     public Text TurnText;
     public Text FundsText;
@@ -18,6 +20,9 @@ public class GameManager : MonoBehaviour {
     public Text ErrorText;
     public Text OverviewText; // Deprecated, will be replaced by errortext, launch report and monthly report.
     public Text HiresText;
+
+    public Text LaunchReportText;
+    public Text MonthlyReportText;
 
     public GameObject MissionsAvailablePanel;
     public GameObject EngineerHiresAvailablePanel;
@@ -78,7 +83,7 @@ public class GameManager : MonoBehaviour {
 
         resetAvailableEngineersForHire();
 
-        updateOutputText();
+        showMonthlyReport();
     }
 
     public void OnOpenHireCanvas()
@@ -99,6 +104,16 @@ public class GameManager : MonoBehaviour {
         MissionsCanvas.SetActive(false);
         LaunchSummaryCanvas.SetActive(false);
         MainCanvas.SetActive(true);
+    }
+
+    public void OnCloseMonthlyReportCanvas()
+    {
+        MonthlyReportCanvas.SetActive(false);
+    }
+
+    public void OnCloseLaunchReportCanvas()
+    {
+        LaunchReportCanvas.SetActive(false);
     }
 
     public void OnHireScientist()
@@ -174,12 +189,10 @@ public class GameManager : MonoBehaviour {
 
         if (random <= successProbability)
         {
-            handleMissionContractSuccess();
             launchVisualizationManager.VisualizeSuccess();
             return;
         }
 
-        handleMissionContractFailure();
         launchVisualizationManager.VisualizeFailure();
     }
 
@@ -200,6 +213,28 @@ public class GameManager : MonoBehaviour {
         }
 
         return manMonths;
+    }
+
+    public void HandleMissionContractSuccess()
+    {
+        funds += currentMissionContract.Value;
+        //OverviewText.text = "Success! You have been rewarded " + currentMissionContract.Value + " funds!";
+        updateFundsText();
+
+        LaunchReportText.text = "Success! You have been rewarded " + currentMissionContract.Value + " funds!";
+        LaunchReportCanvas.SetActive(true);
+
+        currentMissionContract = null;
+    }
+
+    public void HandleMissionContractFailure()
+    {
+        //OverviewText.text = "Failure! The customer will not pay for failures :(";
+
+        LaunchReportText.text = "Failure! The customer will not pay for failures :(";
+        LaunchReportCanvas.SetActive(true);
+
+        currentMissionContract = null;
     }
 
     private void resetAvailableEngineersForHire()
@@ -292,20 +327,6 @@ public class GameManager : MonoBehaviour {
         {
             row.GetComponentInChildren<TakeMissionContractButton>().UpdateButtonText();
         }
-    }
-
-    private void handleMissionContractSuccess()
-    {
-        funds += currentMissionContract.Value;
-        OverviewText.text = "Success! You have been rewarded " + currentMissionContract.Value + " funds!";
-        updateFundsText();
-        currentMissionContract = null;
-    }
-
-    private void handleMissionContractFailure()
-    {
-        OverviewText.text = "Failure! The customer will not pay for failures :(";
-        currentMissionContract = null;
     }
 
     private int getEngineeringMaxProficiency()
@@ -425,11 +446,11 @@ public class GameManager : MonoBehaviour {
         return s;
     }
 
-    private void updateOutputText()
+    private void showMonthlyReport()
     {
         var totalSalary = getEngineerSalaries() + getScientistSalaries();
 
-        var report = 
+        var report =
             "-----------------------\n" +
             "New month\n" +
             "-----------------------\n" +
@@ -439,7 +460,8 @@ public class GameManager : MonoBehaviour {
             "\tResearch done: TODO\n" +
             "\tConstruction done: TODO\n";
 
-        OverviewText.text = report;
+        MonthlyReportText.text = report;
+        MonthlyReportCanvas.SetActive(true);
     }
 
     private void updateFundsText()
